@@ -1,0 +1,50 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * ===========================
+ * This hook will only allow git push if your all test pass
+ * To activate this hook, you need to place this file in the .git/hooks folder
+ * ===========================
+ **/
+
+function runScript($script, $name, $failureMessage)
+{
+    echo "Running $name...";
+    exec($script, $output, $returnCode);
+    if ($returnCode !== 0) {
+        // Show full output
+        echo PHP_EOL . implode($output, PHP_EOL) . PHP_EOL;
+        echo $failureMessage . PHP_EOL;
+        exit(1);
+    }
+
+    // Show summary (last line)
+    echo array_pop($output) . PHP_EOL;
+}
+
+runScript(
+    "./vendor/bin/phpcs",
+    "PHPCS",
+    "Style check failed"
+);
+
+runScript(
+    "./vendor/bin/phpunit",
+    "PHPUnit",
+    "Tests must pass"
+);
+
+runScript(
+    "./vendor/bin/psalm --show-info=false",
+    "Psalm",
+    "Static analysis had failures"
+);
+
+runScript(
+    "./vendor/bin/phpinsights --no-interaction --min-quality=90 --min-complexity=90 --min-architecture=95 --min-style=90",
+    "PHPInsights",
+    "PHPInsights must meet minimum requirement of 90% for all categories"
+);
+
+exit(0);

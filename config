@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+PROJECTPATH="."
+MESSAGE=":rocket: Initial commit."
+QUIET=false
+DEVELOP=false
+AUTH=false
+NODE=false
+CODEEDITOR="storm"
+BROWSER=""
+LINK=true
+SECURE=false
+FRONTEND=""
+CREATE_DATABASE=true
+DB_USERNAME="root"
+DB_PASSWORD=""

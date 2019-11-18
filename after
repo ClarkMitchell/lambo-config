@@ -1,0 +1,40 @@
+#!/usr/bin/env sh
+
+# Add tailwind and auth scaffolding
+composer require laravel-frontend-presets/tailwindcss --dev
+php artisan preset tailwindcss-auth
+npm install && npm run dev
+php artisan migrate
+git add .
+git commit -m "Add tailwind css and auth scaffolding"
+
+# Add Psalm Static Analyzer
+composer require --dev vimeo/psalm psalm/plugin-laravel
+./vendor/bin/psalm-plugin enable psalm/plugin-laravel
+./vendor/bin/psalm --init ./ 1
+./vendor/bin/psalm --set-baseline=psalm-baseline.xml
+./vendor/bin/psalm --update-baseline
+git add .
+git commit -m "Add Psalm, config and baseline"
+
+# Add PHP Insights
+composer require nunomaduro/phpinsights --dev
+php artisan vendor:publish --provider="NunoMaduro\PhpInsights\Application\Adapters\Laravel\InsightsServiceProvider"
+php artisan insights --no-interaction
+git add .
+git commit -m "Add PHP Insights"
+
+# Add Git hooks and config
+cp ~/.lambo/includes/phpunit.xml.dist $PROJECTPATH
+cp ~/.lambo/includes/phpcs.xml $PROJECTPATH
+cp ~/.lambo/includes/hooks/* $PROJECTPATH/.git/hooks
+chmod +x $PROJECTPATH/.git/hooks/pre-push
+chmod +x $PROJECTPATH/.git/hooks/pre-commit
+git add .
+git commit -m "Add hooks and config"
+
+# Clean up
+echo "/.idea/" >> .gitignore
+./vendor/bin/phpcbf
+git add .
+git commit -m "Post install cleanup"
